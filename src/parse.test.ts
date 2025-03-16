@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
-import { custom, string } from "./schemas";
+import { custom } from "./custom";
+import { string } from "./baseTypes";
 import { safeParse, safeParseAsync, ValidationError } from "./parse";
 
 test("ValidationError shows message", () => {
@@ -22,15 +23,23 @@ const asyncSchema = custom(async (input) => {
     return { value: input };
 });
 
-
 test("sync safe parse", () => {
     const schema = string();
     expect(() => safeParse(asyncSchema, "hello")).toThrow("Schema validation is async");
     expect(safeParse(schema, "hello")).toEqual({ success: true, value: "hello" });
-    expect(safeParse(schema, 1)).toEqual({ success: false, issues: [{ message: "Not a valid string" }] });
+    expect(safeParse(schema, 1)).toEqual({
+        success: false,
+        issues: [{ message: "Not a valid string" }],
+    });
 });
 
 test("async safe parse", async () => {
-    expect(await safeParseAsync(asyncSchema, "hello")).toEqual({ success: true, value: "hello" });
-    expect(await safeParseAsync(asyncSchema, 1)).toEqual({ success: false, issues: [{ message: "Not a valid string" }] });
+    expect(await safeParseAsync(asyncSchema, "hello")).toEqual({
+        success: true,
+        value: "hello",
+    });
+    expect(await safeParseAsync(asyncSchema, 1)).toEqual({
+        success: false,
+        issues: [{ message: "Not a valid string" }],
+    });
 });

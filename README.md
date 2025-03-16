@@ -13,9 +13,11 @@ const schema = clonedObject({
     name: string(),
     age: z.number(),
     id: uuidV4(),
-})
+});
 ```
+
 You likely wouldn't do this in reality, but this is an example of how interoperable this library is. Much like other libraries, you pass the standard schema into `parse` / `parseAsync` / `safeParse` / `safeParseAsync`. In this library, if you get an error with `parse`, it will be a `ValidationError` which has `issues` in its root:
+
 ```ts
 import { string, parse } from "standardbot";
 

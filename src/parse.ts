@@ -7,7 +7,7 @@ export class ValidationError extends Error {
         super();
     }
 
-    get message() {
+    override get message() {
         return this.issues.map((issue) => issue.message).join(", ");
     }
 }
@@ -25,7 +25,7 @@ function getHandler<T extends StandardSchemaV1>(schema: T, input: unknown) {
  * @param schema - The schema to parse the input against.
  * @param input - The input to parse.
  * @returns The parsed output.
-*/
+ */
 export function parse<T extends StandardSchemaV1>(schema: T, input: unknown): GetSchemaOutput<T> {
     const result = getHandler(schema, input);
     if (result instanceof Promise) {
@@ -44,7 +44,7 @@ export function parse<T extends StandardSchemaV1>(schema: T, input: unknown): Ge
  * @param schema - The schema to parse the input against.
  * @param input - The input to parse.
  * @returns The parsed output.
-*/
+ */
 export async function parseAsync<T extends StandardSchemaV1>(schema: T, input: unknown): Promise<GetSchemaOutput<T>> {
     const result = await getHandler(schema, input);
     if (result.issues) {
@@ -55,20 +55,22 @@ export async function parseAsync<T extends StandardSchemaV1>(schema: T, input: u
 }
 
 /** Defines the result of a safe parse. */
-export type SafeParseResult<T extends StandardSchemaV1> = {
-    success: true;
-    value: GetSchemaOutput<T>;
-} | {
-    success: false;
-    issues: readonly StandardSchemaV1.Issue[];
-};
+export type SafeParseResult<T extends StandardSchemaV1> =
+    | {
+          success: true;
+          value: GetSchemaOutput<T>;
+      }
+    | {
+          success: false;
+          issues: readonly StandardSchemaV1.Issue[];
+      };
 
 /**
- * Parses the input against the schema, returning a object instead of throwing an error.    
+ * Parses the input against the schema, returning a object instead of throwing an error.
  * @param schema - The schema to parse the input against.
  * @param input - The input to parse.
  * @returns The parsed output.
-*/
+ */
 export function safeParse<T extends StandardSchemaV1>(schema: T, input: unknown): SafeParseResult<T> {
     const result = getHandler(schema, input);
     if (result instanceof Promise) {
@@ -87,8 +89,11 @@ export function safeParse<T extends StandardSchemaV1>(schema: T, input: unknown)
  * @param schema - The schema to parse the input against.
  * @param input - The input to parse.
  * @returns The parsed output.
-*/
-export async function safeParseAsync<T extends StandardSchemaV1>(schema: T, input: unknown): Promise<SafeParseResult<T>> {
+ */
+export async function safeParseAsync<T extends StandardSchemaV1>(
+    schema: T,
+    input: unknown,
+): Promise<SafeParseResult<T>> {
     const result = await getHandler(schema, input);
     if (result.issues) {
         return { success: false, issues: result.issues };
